@@ -26,7 +26,7 @@ func GetUserApplications(ctx context.Context) ([]types.ProcessInfo, error) {
 			continue
 		}
 
-		// Skip system processes
+		// Skip system processes by name
 		if isSystemProcess(name, systemPrefixes) {
 			continue
 		}
@@ -38,15 +38,25 @@ func GetUserApplications(ctx context.Context) ([]types.ProcessInfo, error) {
 			continue
 		}
 
+		// Get username to filter system users
+		username := ""
+		if u, err := p.UsernameWithContext(ctx); err == nil {
+			username = u
+			// Skip processes owned by system users (varies by OS)
+			if isSystemUser(username, runtime.GOOS) {
+				continue
+			}
+		}
+
+		// Skip processes with no user (typically system processes)
+		if username == "" {
+			continue
+		}
+
 		pid := p.Pid
 		status := ""
 		if st, err := p.StatusWithContext(ctx); err == nil {
 			status = strings.Join(st, ",")
-		}
-
-		username := ""
-		if u, err := p.UsernameWithContext(ctx); err == nil {
-			username = u
 		}
 
 		startTime := ""
@@ -88,12 +98,39 @@ func getSystemPrefixes() []string {
 
 // isSystemProcess checks if a process is a system process
 func isSystemProcess(name string, prefixes []string) bool {
+	nameLower := strings.ToLower(name)
 	for _, prefix := range prefixes {
-		if strings.HasPrefix(name, prefix) {
+		if strings.HasPrefix(strings.ToLower(nameLower), strings.ToLower(prefix)) {
 			return true
 		}
 	}
 	return false
+}
+
+// isSystemUser checks if a username belongs to a system user
+func isSystemUser(username string, os string) bool {
+	systemUsers := getSystemUsers(os)
+	usernameLower := strings.ToLower(username)
+	for _, sysUser := range systemUsers {
+		if strings.ToLower(sysUser) == usernameLower {
+			return true
+		}
+	}
+	return false
+}
+
+// getSystemUsers returns OS-specific system user names
+func getSystemUsers(os string) []string {
+	switch os {
+	case "darwin":
+		return []string{"root", "_windowserver", "_appleevents", "_coreaudiod", "_securityd"}
+	case "linux":
+		return []string{"root", "daemon", "bin", "sys", "sync", "games", "man", "lp", "mail", "news", "uucp", "proxy", "www-data", "backup", "list", "irc", "gnats", "nobody"}
+	case "windows":
+		return []string{"SYSTEM", "LOCAL SERVICE", "NETWORK SERVICE"}
+	default:
+		return []string{"root", "system", "daemon"}
+	}
 }
 
 func formatTime(timestamp int64) string {

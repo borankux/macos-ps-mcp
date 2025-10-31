@@ -34,13 +34,13 @@ func NewServer(port int) *Server {
 func (s *Server) Start() error {
 	mux := http.NewServeMux()
 
-	// MCP protocol endpoints
-	mux.HandleFunc("/mcp/v1/processes", s.handleProcesses)
-	mux.HandleFunc("/mcp/v1/windows", s.handleWindows)
-	mux.HandleFunc("/mcp/v1/ports", s.handlePorts)
-	mux.HandleFunc("/mcp/v1/resource", s.handleResource)
-	mux.HandleFunc("/mcp/v1/services", s.handleServices)
-	mux.HandleFunc("/health", s.handleHealth)
+	// MCP protocol endpoints with CORS support
+	mux.HandleFunc("/mcp/v1/processes", s.corsMiddleware(s.handleProcesses))
+	mux.HandleFunc("/mcp/v1/windows", s.corsMiddleware(s.handleWindows))
+	mux.HandleFunc("/mcp/v1/ports", s.corsMiddleware(s.handlePorts))
+	mux.HandleFunc("/mcp/v1/resource", s.corsMiddleware(s.handleResource))
+	mux.HandleFunc("/mcp/v1/services", s.corsMiddleware(s.handleServices))
+	mux.HandleFunc("/health", s.corsMiddleware(s.handleHealth))
 
 	s.server = &http.Server{
 		Addr:    fmt.Sprintf(":%d", s.port),
@@ -202,5 +202,21 @@ func (s *Server) sendError(w http.ResponseWriter, err error) {
 		Error: err.Error(),
 	}
 	json.NewEncoder(w).Encode(response)
+}
+
+// corsMiddleware adds CORS headers to responses
+func (s *Server) corsMiddleware(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+		
+		next(w, r)
+	}
 }
 

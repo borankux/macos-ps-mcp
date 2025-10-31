@@ -58,7 +58,6 @@ func getMacOSWindows(ctx context.Context) ([]types.WindowInfo, error) {
 
 	lines := strings.Split(strings.TrimSpace(string(output)), ", ")
 	var windows []types.WindowInfo
-	var currentWindow *types.WindowInfo
 
 	for _, line := range lines {
 		line = strings.TrimSpace(line)

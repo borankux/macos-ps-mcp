@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"encoding/json"
 	"os/exec"
 	"runtime"
 	"strconv"
@@ -155,7 +156,15 @@ func getLinuxServices(ctx context.Context) ([]types.ServiceInfo, error) {
 // getWindowsServices gets services on Windows
 func getWindowsServices(ctx context.Context) ([]types.ServiceInfo, error) {
 	psScript := `
-		Get-Service | Select-Object Name, Status, @{Name='PID';Expression={(Get-WmiObject Win32_Service -Filter "Name='$($_.Name)'").ProcessId}} | ConvertTo-Json
+		Get-Service | ForEach-Object {
+			$pid = (Get-WmiObject Win32_Service -Filter "Name='$($_.Name)'" -ErrorAction SilentlyContinue).ProcessId
+			if ($pid -eq $null) { $pid = 0 }
+			[PSCustomObject]@{
+				Name = $_.Name
+				Status = $_.Status.ToString()
+				PID = $pid
+			}
+		} | ConvertTo-Json -Compress
 	`
 
 	cmd := exec.CommandContext(ctx, "powershell", "-Command", psScript)
@@ -165,10 +174,52 @@ func getWindowsServices(ctx context.Context) ([]types.ServiceInfo, error) {
 	}
 
 	var services []types.ServiceInfo
-	// Parse JSON output - simplified for now
-	// In production, use proper JSON parsing
-	lines := strings.Split(strings.TrimSpace(string(output)), "\n")
-	_ = lines
+	
+	// Parse JSON output
+	var serviceObjs []struct {
+		Name   string `json:"Name"`
+		Status string `json:"Status"`
+		PID    int    `json:"PID"`
+	}
+	
+	if err := json.Unmarshal(output, &serviceObjs); err != nil {
+		// If array parsing fails, try single object
+		var serviceObj struct {
+			Name   string `json:"Name"`
+			Status string `json:"Status"`
+			PID    int    `json:"PID"`
+		}
+		if err2 := json.Unmarshal(output, &serviceObj); err2 == nil {
+			serviceObjs = []struct {
+				Name   string `json:"Name"`
+				Status string `json:"Status"`
+				PID    int    `json:"PID"`
+			}{serviceObj}
+		} else {
+			return nil, err
+		}
+	}
+
+	for _, s := range serviceObjs {
+		serviceInfo := types.ServiceInfo{
+			Name:   s.Name,
+			Status: strings.ToLower(s.Status),
+			PID:    int32(s.PID),
+		}
+
+		// Get resource usage if PID is available
+		if s.PID > 0 {
+			usage, err := resource.GetProcessResourceUsage(ctx, int32(s.PID))
+			if err == nil {
+				serviceInfo.CPUPercent = usage.CPUPercent
+				serviceInfo.MemoryPercent = usage.MemoryPercent
+				serviceInfo.MemoryHuman = usage.MemoryHuman
+				serviceInfo.CPUHuman = usage.CPUHuman
+			}
+		}
+
+		services = append(services, serviceInfo)
+	}
 
 	return services, nil
 }
