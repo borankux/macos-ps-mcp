@@ -9,9 +9,7 @@ import (
 	"strings"
 
 	"github.com/allintech/gops/internal/resource"
-	"github.com/allintech/gops/internal/utils"
 	"github.com/allintech/gops/pkg/types"
-	"github.com/shirou/gopsutil/v3/process"
 )
 
 // GetServices returns a list of system services with resource usage
@@ -174,14 +172,14 @@ func getWindowsServices(ctx context.Context) ([]types.ServiceInfo, error) {
 	}
 
 	var services []types.ServiceInfo
-	
+
 	// Parse JSON output
 	var serviceObjs []struct {
 		Name   string `json:"Name"`
 		Status string `json:"Status"`
 		PID    int    `json:"PID"`
 	}
-	
+
 	if err := json.Unmarshal(output, &serviceObjs); err != nil {
 		// If array parsing fails, try single object
 		var serviceObj struct {
@@ -223,4 +221,3 @@ func getWindowsServices(ctx context.Context) ([]types.ServiceInfo, error) {
 
 	return services, nil
 }
-

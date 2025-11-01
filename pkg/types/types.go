@@ -1,7 +1,5 @@
 package types
 
-import "time"
-
 // ProcessInfo represents information about a running process
 type ProcessInfo struct {
 	PID       int32  `json:"pid"`
@@ -38,10 +36,10 @@ type ResourceUsage struct {
 	Name          string  `json:"name"`
 	CPUPercent    float64 `json:"cpu_percent"`
 	MemoryPercent float32 `json:"memory_percent"`
-	MemoryRSS     uint64  `json:"memory_rss"`     // Resident Set Size in bytes
-	MemoryVMS     uint64  `json:"memory_vms"`     // Virtual Memory Size in bytes
-	MemoryHuman   string  `json:"memory_human"`   // Human readable memory
-	CPUHuman      string  `json:"cpu_human"`      // Human readable CPU
+	MemoryRSS     uint64  `json:"memory_rss"`   // Resident Set Size in bytes
+	MemoryVMS     uint64  `json:"memory_vms"`   // Virtual Memory Size in bytes
+	MemoryHuman   string  `json:"memory_human"` // Human readable memory
+	CPUHuman      string  `json:"cpu_human"`    // Human readable CPU
 	Threads       int32   `json:"threads,omitempty"`
 	OpenFiles     int32   `json:"open_files,omitempty"`
 }
@@ -85,4 +83,3 @@ type ServicesResponse struct {
 type ErrorResponse struct {
 	Error string `json:"error"`
 }
-

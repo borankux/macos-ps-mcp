@@ -3,8 +3,6 @@ package port
 import (
 	"context"
 	"fmt"
-	"runtime"
-	"strconv"
 	"strings"
 
 	"github.com/allintech/gops/pkg/types"
@@ -131,4 +129,3 @@ func GetPortsByPID(ctx context.Context, pid int32) ([]types.PortInfo, error) {
 
 	return filtered, nil
 }
-
