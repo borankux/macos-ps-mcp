@@ -16,14 +16,14 @@ import (
 func main() {
 	var (
 		// CLI flags
-		processes = flag.Bool("processes", false, "List user applications")
-		windows   = flag.Bool("windows", false, "List open windows")
-		ports     = flag.Bool("ports", false, "List open ports")
-		resource  = flag.Bool("resource", false, "Show resource usage for a process")
-		services  = flag.Bool("services", false, "List system services")
+		processes  = flag.Bool("processes", false, "List user applications")
+		windows    = flag.Bool("windows", false, "List open windows")
+		ports      = flag.Bool("ports", false, "List open ports")
+		resource   = flag.Bool("resource", false, "Show resource usage for a process")
+		services   = flag.Bool("services", false, "List system services")
 		portFilter = flag.String("port", "", "Filter ports by port number")
-		pid       = flag.String("pid", "", "Filter ports by PID or show resource usage")
-		
+		pid        = flag.String("pid", "", "Filter ports by PID or show resource usage")
+
 		// MCP server flags
 		serverMode = flag.Bool("server", false, "Start MCP server")
 		serverPort = flag.Int("server-port", 8080, "MCP server port (default: 8080)")
@@ -56,11 +56,11 @@ func main() {
 	// MCP Server Mode
 	if *serverMode {
 		server := mcp.NewServer(*serverPort)
-		
+
 		// Handle graceful shutdown
 		sigChan := make(chan os.Signal, 1)
 		signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
-		
+
 		go func() {
 			<-sigChan
 			fmt.Println("\n🛑 Shutting down MCP server...")
@@ -69,7 +69,7 @@ func main() {
 			}
 			os.Exit(0)
 		}()
-		
+
 		if err := server.Start(); err != nil {
 			fmt.Fprintf(os.Stderr, "❌ Error starting MCP server: %v\n", err)
 			os.Exit(1)
@@ -138,4 +138,3 @@ func main() {
 	fmt.Println("  -server       Start MCP server")
 	fmt.Println("\nUse -help for more information")
 }
-
