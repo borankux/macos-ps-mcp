@@ -6,12 +6,12 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/allintech/gops/internal/port"
-	"github.com/allintech/gops/internal/process"
-	"github.com/allintech/gops/internal/resource"
-	"github.com/allintech/gops/internal/service"
-	"github.com/allintech/gops/internal/window"
-	"github.com/allintech/gops/pkg/types"
+	"github.com/borankux/gops/internal/port"
+	"github.com/borankux/gops/internal/process"
+	"github.com/borankux/gops/internal/resource"
+	"github.com/borankux/gops/internal/service"
+	"github.com/borankux/gops/internal/window"
+	"github.com/borankux/gops/pkg/types"
 	"github.com/jedib0t/go-pretty/v6/table"
 )
 
@@ -205,4 +205,3 @@ func truncateString(s string, maxLen int) string {
 	}
 	return s[:maxLen-3] + "..."
 }
-

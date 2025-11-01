@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/allintech/gops/pkg/types"
+	"github.com/borankux/gops/pkg/types"
 )
 
 // GetOpenWindows returns a list of open windows
@@ -78,7 +78,7 @@ func getMacOSWindows(ctx context.Context) ([]types.WindowInfo, error) {
 		if len(parts) >= 2 {
 			appName := strings.TrimSpace(strings.Trim(parts[0], "\""))
 			title := strings.TrimSpace(strings.Trim(strings.Join(parts[1:len(parts)-1], ","), "\""))
-			
+
 			var pid int32
 			if len(parts) >= 3 {
 				pidStr := strings.TrimSpace(parts[len(parts)-1])
@@ -155,7 +155,7 @@ func getMacOSWindowsAlt(ctx context.Context) ([]types.WindowInfo, error) {
 			appName := strings.TrimSpace(parts[0])
 			title := strings.TrimSpace(parts[1])
 			pidStr := strings.TrimSpace(parts[2])
-			
+
 			pid, err := strconv.ParseInt(pidStr, 10, 32)
 			if err != nil {
 				pid = int64(getPIDForApp(ctx, appName))
@@ -224,24 +224,24 @@ func getWindowsWindows(ctx context.Context) ([]types.WindowInfo, error) {
 
 	var windows []types.WindowInfo
 	lines := strings.Split(strings.TrimSpace(string(output)), "\n")
-	
+
 	for _, line := range lines {
 		line = strings.TrimSpace(line)
 		if line == "" {
 			continue
 		}
-		
+
 		parts := strings.Split(line, "|")
 		if len(parts) >= 3 {
 			pidStr := strings.TrimSpace(parts[0])
 			processName := strings.TrimSpace(parts[1])
 			title := strings.TrimSpace(parts[2])
-			
+
 			pid, err := strconv.ParseInt(pidStr, 10, 32)
 			if err != nil {
 				continue
 			}
-			
+
 			windows = append(windows, types.WindowInfo{
 				Title:   title,
 				PID:     int32(pid),
@@ -276,4 +276,3 @@ func getProcessName(ctx context.Context, pid int32) string {
 	}
 	return ""
 }
-

@@ -6,7 +6,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/allintech/gops/pkg/types"
+	"github.com/borankux/gops/pkg/types"
 	"github.com/shirou/gopsutil/v3/process"
 )
 
@@ -137,4 +137,3 @@ func formatTime(timestamp int64) string {
 	return ""
 	// Can be expanded to format timestamp to readable date
 }
-

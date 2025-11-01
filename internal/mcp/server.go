@@ -9,12 +9,12 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/allintech/gops/internal/port"
-	"github.com/allintech/gops/internal/process"
-	"github.com/allintech/gops/internal/resource"
-	"github.com/allintech/gops/internal/service"
-	"github.com/allintech/gops/internal/window"
-	"github.com/allintech/gops/pkg/types"
+	"github.com/borankux/gops/internal/port"
+	"github.com/borankux/gops/internal/process"
+	"github.com/borankux/gops/internal/resource"
+	"github.com/borankux/gops/internal/service"
+	"github.com/borankux/gops/internal/window"
+	"github.com/borankux/gops/pkg/types"
 )
 
 // Server represents the MCP server
@@ -210,13 +210,12 @@ func (s *Server) corsMiddleware(next http.HandlerFunc) http.HandlerFunc {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-		
+
 		if r.Method == "OPTIONS" {
 			w.WriteHeader(http.StatusOK)
 			return
 		}
-		
+
 		next(w, r)
 	}
 }
-

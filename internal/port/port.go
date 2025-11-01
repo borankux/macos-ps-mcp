@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/allintech/gops/pkg/types"
+	"github.com/borankux/gops/pkg/types"
 	"github.com/shirou/gopsutil/v3/net"
 	"github.com/shirou/gopsutil/v3/process"
 )

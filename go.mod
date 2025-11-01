@@ -1,4 +1,4 @@
-module github.com/allintech/gops
+module github.com/borankux/gops
 
 go 1.21
 

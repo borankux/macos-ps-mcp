@@ -8,8 +8,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/allintech/gops/internal/resource"
-	"github.com/allintech/gops/pkg/types"
+	"github.com/borankux/gops/internal/resource"
+	"github.com/borankux/gops/pkg/types"
 )
 
 // GetServices returns a list of system services with resource usage

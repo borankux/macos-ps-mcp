@@ -3,8 +3,8 @@ package resource
 import (
 	"context"
 
-	"github.com/allintech/gops/internal/utils"
-	"github.com/allintech/gops/pkg/types"
+	"github.com/borankux/gops/internal/utils"
+	"github.com/borankux/gops/pkg/types"
 	"github.com/shirou/gopsutil/v3/process"
 )
 
@@ -44,10 +44,10 @@ func GetProcessResourceUsage(ctx context.Context, pid int32) (*types.ResourceUsa
 		MemoryPercent: memPercent,
 		MemoryRSS:     memoryRSS,
 		MemoryVMS:     memoryVMS,
-		MemoryHuman:  memoryHuman,
-		CPUHuman:     cpuHuman,
-		Threads:      threads,
-		OpenFiles:    openFiles,
+		MemoryHuman:   memoryHuman,
+		CPUHuman:      cpuHuman,
+		Threads:       threads,
+		OpenFiles:     openFiles,
 	}, nil
 }
 
@@ -94,4 +94,3 @@ func GetTopProcesses(ctx context.Context, limit int, sortBy string) ([]types.Res
 
 	return usages, nil
 }
-

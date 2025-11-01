@@ -9,8 +9,8 @@ import (
 	"strconv"
 	"syscall"
 
-	"github.com/allintech/gops/internal/cli"
-	"github.com/allintech/gops/internal/mcp"
+	"github.com/borankux/gops/internal/cli"
+	"github.com/borankux/gops/internal/mcp"
 )
 
 func main() {
